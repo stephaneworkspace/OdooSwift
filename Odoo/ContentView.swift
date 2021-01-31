@@ -75,10 +75,13 @@ class Odoo {
     }
 }
 
-
 struct ContentView: View {
+    @Environment(\.defaultMinListRowHeight) var minRowHeight
     @State var day_work: DayWork = DayWork.init(day: "", work: Array.init())
-    
+    @State private var workDay = Date()
+    @State var odoo: Odoo = Odoo.init()
+    @State var cred: Cred = Cred.init()
+
     func format_program(activity: String, product_name: String ) -> some View {
         let s = String("["+activity+"] " + product_name);
         return Text(s)
@@ -89,40 +92,53 @@ struct ContentView: View {
         formatter.dateStyle = .long
         return formatter
     }
-
-    @State private var workDay = Date()
     
     var body: some View {
-        ScrollView {
+        NavigationView {
+        VStack {
             DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date) {
                 Text("Select a date")
             }
             Text(dateFormatter.string(from: workDay))
             VStack(spacing: 5) {
-                //NavigationView {
-                 //   List() {
-                        ForEach(0..<day_work.work!.count, id: \.self) { i in
-                            self.format_program(activity: day_work.work![i].activity ?? "", product_name: day_work.work![i].product_name ?? "")
-                            Text(String(format: "%.2f", day_work.work![i].worked_hour ?? 0.0))
-                            Text(String(format: "%.2f", day_work.work![i].product_list_price ?? 0.0))
-                            Text(String(format: "%.2f", day_work.work![i].price_raw ?? 0.0))
-                            Text(String(day_work.work![i].product_description_sale ?? "???"))
-                            Text(String(day_work.work![i].note ?? "???"))
+                List {
+                    ForEach(0..<day_work.work!.count, id: \.self) { i in
+                        Section {
+                            HStack {
+                                self.format_program(activity: day_work.work![i].activity ?? "", product_name: day_work.work![i].product_name ?? "").padding()
+                                Spacer()
+                                Text(String(format: "%.2f", day_work.work![i].worked_hour ?? 0.0)).padding()
+                                Spacer()
+                                //Text(String(format: "%.2f", day_work.work![i].product_list_price ?? 0.0)).padding()
+                                Text(String(format: "CHF %.2f", day_work.work![i].price_raw ?? 0.0)).padding()
+                            }
                         }
-                //    }.navigationBarTitle(day_work.day ?? "???")
-                //}
+                        Section {
+                            HStack {
+                                Text(String(day_work.work![i].product_description_sale ?? "???")).padding()
+                                Spacer()
+                                Text(String(day_work.work![i].note ?? "???")).padding()
+                            }
+                        }
+                    }
+                }.navigationBarTitle(day_work.day ?? "???").frame(minHeight: minRowHeight * 6).listStyle(GroupedListStyle()).environment(\.horizontalSizeClass, .regular)
                 Text("My Odoo")
                     .padding()
                     Button(action: {
-                        let odoo = Odoo.init();
-                        let cred = odoo.readJSONFromFile(fileName: "cred");
-                        // print(cred?.username ?? "User is nil")
-                        day_work = odoo.getWork(cred: cred!, date: workDay) // TODO safe
+                        day_work = odoo.getWork(cred: cred, date: workDay)
                     }) {
                         Text("This day")
                     }
                 }
-        }
+            }
+        }.onAppear(perform: fetch)
+    }
+    
+    private func fetch() {
+        odoo = Odoo.init();
+        cred = odoo.readJSONFromFile(fileName: "cred")!
+        // print(cred?.username ?? "User is nil")
+        day_work = odoo.getWork(cred: cred, date: workDay)
     }
 }
 
