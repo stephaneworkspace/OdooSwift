@@ -21,8 +21,9 @@ class Odoo {
         }
         return res
     }
-    func getWork(cred: Cred) -> String {
+    func getWork(cred: Cred) -> DayWork {
         let empty = ""
+        let empty_day_work = DayWork.init(day: "", work: Array.init())
         let e_cstring = empty.cString(using: String.Encoding.utf8)
         let url = cred.url?.cString(using: String.Encoding.utf8) ?? e_cstring
         let db = cred.db?.cString(using: String.Encoding.utf8) ?? e_cstring
@@ -36,10 +37,19 @@ class Odoo {
             res = String.init(cString: res_cstr)
             free_string(res_cstr)
         } else {
-            res = "Returned string was null!"
+            res = "{}"
         }
-        return res
+        var json: DayWork?;
+        let decoder = JSONDecoder();
+        let jsonData = res.data(using: String.Encoding.utf8)
+        do {
+            json = try decoder.decode(DayWork.self, from: jsonData!)
+        } catch {
+            debugPrint("Error parsing json odoo work hour")
+        }
+        return json ?? empty_day_work
     }
+    
     func readJSONFromFile(fileName: String) -> Cred? {
         var json: Cred?
         if let path = Bundle.main.path(forResource: fileName, ofType: "json") {
@@ -64,20 +74,25 @@ class Odoo {
 }
 
 struct ContentView: View {
-    @State var string = "Not set";
+    @State var day_work: DayWork = DayWork.init(day: "", work: Array.init())
     var body: some View {
         VStack {
-        Text("Hello, world!")
+            ForEach(0 ..< day_work.work!.count, id: \.self) {
+                i in HStack {
+                    Text("\(day_work.work![i].activity ?? "???")")
+                }
+            }
+        Text("My Odoo")
             .padding()
             Button(action: {
                 let odoo = Odoo.init();
 
                 let cred = odoo.readJSONFromFile(fileName: "cred");
-                print(cred?.username ?? "User is nil")
-                string = odoo.getWork(cred: cred!) // TODO safe
+                // print(cred?.username ?? "User is nil")
+                day_work = odoo.getWork(cred: cred!) // TODO safe
                 //string = odoo.HelloWorld()
             }) {
-                Text(string)
+                Text("This day")
             }
         }
     }

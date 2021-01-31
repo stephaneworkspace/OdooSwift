@@ -18,6 +18,8 @@
 		ECCFCA6225C6FBAB007E6F49 /* Cred.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCFCA6125C6FBAB007E6F49 /* Cred.swift */; };
 		ECCFCA6A25C70044007E6F49 /* cred.json in Resources */ = {isa = PBXBuildFile; fileRef = ECCFCA6925C70044007E6F49 /* cred.json */; };
 		ECCFCA7125C70188007E6F49 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECCFCA7025C70188007E6F49 /* NetworkExtension.framework */; };
+		ECCFCA8325C709C5007E6F49 /* DayWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCFCA8225C709C5007E6F49 /* DayWork.swift */; };
+		ECCFCA8825C709D3007E6F49 /* Work.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCFCA8725C709D3007E6F49 /* Work.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,8 @@
 		ECCFCA6925C70044007E6F49 /* cred.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cred.json; sourceTree = "<group>"; };
 		ECCFCA6E25C70188007E6F49 /* Odoo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Odoo.entitlements; sourceTree = "<group>"; };
 		ECCFCA7025C70188007E6F49 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		ECCFCA8225C709C5007E6F49 /* DayWork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayWork.swift; sourceTree = "<group>"; };
+		ECCFCA8725C709D3007E6F49 /* Work.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Work.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +169,8 @@
 			isa = PBXGroup;
 			children = (
 				ECCFCA6125C6FBAB007E6F49 /* Cred.swift */,
+				ECCFCA8225C709C5007E6F49 /* DayWork.swift */,
+				ECCFCA8725C709D3007E6F49 /* Work.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -310,8 +316,10 @@
 			files = (
 				ECC856E325C6CEE80029E8D4 /* libodoo_tools.c in Sources */,
 				ECC856B425C6BDC40029E8D4 /* ContentView.swift in Sources */,
+				ECCFCA8825C709D3007E6F49 /* Work.swift in Sources */,
 				ECC856B225C6BDC40029E8D4 /* OdooApp.swift in Sources */,
 				ECCFCA6225C6FBAB007E6F49 /* Cred.swift in Sources */,
+				ECCFCA8325C709C5007E6F49 /* DayWork.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
