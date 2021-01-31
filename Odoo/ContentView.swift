@@ -81,7 +81,8 @@ struct ContentView: View {
     @State private var workDay = Date()
     @State var odoo: Odoo = Odoo.init()
     @State var cred: Cred = Cred.init()
-
+    @State var loading = false
+    
     func format_program(activity: String, product_name: String ) -> some View {
         let s = String("["+activity+"] " + product_name);
         return Text(s)
@@ -101,17 +102,14 @@ struct ContentView: View {
             total_chf += day_work.work![i].price_raw ?? 0.0
         }
         let s = String(format: "%.2f %.2f CHF", total_hour, total_chf)
-        return Text(s).padding()
+        return Text(s)
     }
+
     
     var body: some View {
         NavigationView {
         VStack {
-            DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date) {
-                Text("Select a date")
-            }
-            Text(dateFormatter.string(from: workDay))
-            VStack(spacing: 5) {
+            VStack/*(spacing: 1)*/ {
                 List {
                     ForEach(0..<day_work.work!.count, id: \.self) { i in
                         Section {
@@ -123,18 +121,19 @@ struct ContentView: View {
                                 //Text(String(format: "%.2f", day_work.work![i].product_list_price ?? 0.0)).padding()
                                 Text(String(format: "CHF %.2f", day_work.work![i].price_raw ?? 0.0)).padding()
                             }
-                        }
-                        Section {
                             HStack {
                                 Text(String(day_work.work![i].product_description_sale ?? "???")).padding()
                                 Spacer()
                                 Text(String(day_work.work![i].note ?? "???")).padding()
                             }
-                        }
+                        }//.background(i.isMultiple(of: 2) ?Color(.secondarySystemBackground): Color(.systemBackground))
                     }
-                }.navigationBarTitle(day_work.day ?? "???").frame(minHeight: minRowHeight * 6).listStyle(GroupedListStyle()).environment(\.horizontalSizeClass, .regular)
+                }.navigationBarTitle(day_work.day ?? "???").frame(minHeight: minRowHeight, maxHeight: minRowHeight * 6).listStyle(GroupedListStyle()).environment(\.horizontalSizeClass, .regular).padding(1).font(.system(size: 10))
                 self.total()
-                    Button(action: {
+                DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date){
+                    EmptyView()
+                }.labelsHidden().datePickerStyle(WheelDatePickerStyle()).clipped().environment(\.locale, Locale.init(identifier: "fr"))
+                Button(action: {
                         day_work = odoo.getWork(cred: cred, date: workDay)
                     }) {
                         Text("This day")
