@@ -93,6 +93,17 @@ struct ContentView: View {
         return formatter
     }
     
+    func total() -> some View {
+        var total_hour = 0.0;
+        var total_chf = 0.0;
+        for i in 0..<day_work.work!.count {
+            total_hour += day_work.work![i].worked_hour ?? 0.0
+            total_chf += day_work.work![i].price_raw ?? 0.0
+        }
+        let s = String(format: "%.2f %.2f CHF", total_hour, total_chf)
+        return Text(s).padding()
+    }
+    
     var body: some View {
         NavigationView {
         VStack {
@@ -122,8 +133,7 @@ struct ContentView: View {
                         }
                     }
                 }.navigationBarTitle(day_work.day ?? "???").frame(minHeight: minRowHeight * 6).listStyle(GroupedListStyle()).environment(\.horizontalSizeClass, .regular)
-                Text("My Odoo")
-                    .padding()
+                self.total()
                     Button(action: {
                         day_work = odoo.getWork(cred: cred, date: workDay)
                     }) {
