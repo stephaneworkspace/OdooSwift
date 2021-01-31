@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DayWork: Codable {
+struct DayWork: Decodable {
     var day: String?,
         work: Array<Work>?
 }

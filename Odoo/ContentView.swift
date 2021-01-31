@@ -21,7 +21,8 @@ class Odoo {
         }
         return res
     }
-    func getWork(cred: Cred) -> DayWork {
+    
+    func getWork(cred: Cred, date: Date) -> DayWork {
         let empty = ""
         let empty_day_work = DayWork.init(day: "", work: Array.init())
         let e_cstring = empty.cString(using: String.Encoding.utf8)
@@ -29,9 +30,10 @@ class Odoo {
         let db = cred.db?.cString(using: String.Encoding.utf8) ?? e_cstring
         let username = cred.username?.cString(using: String.Encoding.utf8) ?? e_cstring
         let password = cred.password?.cString(using: String.Encoding.utf8) ?? e_cstring
-        let year = 2021 as Int32
-        let month = 01 as UInt32
-        let day = 22 as UInt32
+        let calendar = Calendar.current
+        let year = Int32(calendar.component(.year, from: date))
+        let month = UInt32(calendar.component(.month, from: date))
+        let day = UInt32(calendar.component(.day, from: date))
         var res = ""
         if let res_cstr = get_work(url, db, username, password, year, month, day) {
             res = String.init(cString: res_cstr)
@@ -73,27 +75,53 @@ class Odoo {
     }
 }
 
+
 struct ContentView: View {
     @State var day_work: DayWork = DayWork.init(day: "", work: Array.init())
-    var body: some View {
-        VStack {
-            ForEach(0 ..< day_work.work!.count, id: \.self) {
-                i in HStack {
-                    Text("\(day_work.work![i].activity ?? "???")")
-                }
-            }
-        Text("My Odoo")
-            .padding()
-            Button(action: {
-                let odoo = Odoo.init();
+    
+    func format_program(activity: String, product_name: String ) -> some View {
+        let s = String("["+activity+"] " + product_name);
+        return Text(s)
+    }
+    
+    var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        return formatter
+    }
 
-                let cred = odoo.readJSONFromFile(fileName: "cred");
-                // print(cred?.username ?? "User is nil")
-                day_work = odoo.getWork(cred: cred!) // TODO safe
-                //string = odoo.HelloWorld()
-            }) {
-                Text("This day")
+    @State private var workDay = Date()
+    
+    var body: some View {
+        ScrollView {
+            DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date) {
+                Text("Select a date")
             }
+            Text(dateFormatter.string(from: workDay))
+            VStack(spacing: 5) {
+                //NavigationView {
+                 //   List() {
+                        ForEach(0..<day_work.work!.count, id: \.self) { i in
+                            self.format_program(activity: day_work.work![i].activity ?? "", product_name: day_work.work![i].product_name ?? "")
+                            Text(String(format: "%.2f", day_work.work![i].worked_hour ?? 0.0))
+                            Text(String(format: "%.2f", day_work.work![i].product_list_price ?? 0.0))
+                            Text(String(format: "%.2f", day_work.work![i].price_raw ?? 0.0))
+                            Text(String(day_work.work![i].product_description_sale ?? "???"))
+                            Text(String(day_work.work![i].note ?? "???"))
+                        }
+                //    }.navigationBarTitle(day_work.day ?? "???")
+                //}
+                Text("My Odoo")
+                    .padding()
+                    Button(action: {
+                        let odoo = Odoo.init();
+                        let cred = odoo.readJSONFromFile(fileName: "cred");
+                        // print(cred?.username ?? "User is nil")
+                        day_work = odoo.getWork(cred: cred!, date: workDay) // TODO safe
+                    }) {
+                        Text("This day")
+                    }
+                }
         }
     }
 }

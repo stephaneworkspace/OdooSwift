@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Work: Codable {
+struct Work: Decodable {
     var activity: String?,
         product_name: String?,
         worked_hour: Float64?,
