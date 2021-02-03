@@ -8,6 +8,55 @@
 import SwiftUI
 import Foundation
 
+private class WrapClosure<T> {
+    fileprivate let closure: T
+    init(closure: T) {
+        self.closure = closure
+    }
+}
+public func FriendlyAsyncOperation(closure: @escaping (Bool) -> Void) {
+    // step 1
+    let wrappedClosure = WrapClosure(closure: closure)
+    let userdata = Unmanaged.passRetained(wrappedClosure).toOpaque()
+
+    // step 2
+    let callback: @convention(c) (UnsafeMutableRawPointer, Bool) -> Void = { (_ userdata: UnsafeMutableRawPointer, _ success: Bool) in
+        let wrappedClosure: WrapClosure<(Bool) -> Void> = Unmanaged.fromOpaque(userdata).takeRetainedValue()
+        wrappedClosure.closure(success)
+    }
+
+    // step 3
+    let completion = CompletedCallback(userdata: userdata, callback: callback)
+
+    //step 4
+    async_operation(completion)
+}
+
+class TestLifetime {
+    let sema: DispatchSemaphore
+    init(_ sema: DispatchSemaphore) {
+        self.sema = sema
+        print("start of test lifetime")
+    }
+
+    deinit {
+        print("end of test lifetime")
+    }
+
+    func completed(_ success: Bool) {
+        print("the async operation has completed with result \(success)")
+        sema.signal()
+    }
+}
+
+func startOperation(_ sema: DispatchSemaphore) {
+    let test = TestLifetime(sema)
+    print("starting async operation")
+    FriendlyAsyncOperation() { [test] success in
+        test.completed(success)
+    }
+}
+
 class Odoo {
     func HelloWorld() -> String {
         let text = "ok"
@@ -129,6 +178,13 @@ struct ContentView: View {
                         }//.background(i.isMultiple(of: 2) ?Color(.secondarySystemBackground): Color(.systemBackground))
                     }
                 }.navigationBarTitle(day_work.day ?? "???").frame(minHeight: minRowHeight, maxHeight: minRowHeight * 6).listStyle(GroupedListStyle()).environment(\.horizontalSizeClass, .regular).padding(1).font(.system(size: 10))
+                Button(action: {
+                  let semaphore = DispatchSemaphore(value: 0)
+                  startOperation(semaphore)
+                  semaphore.wait()
+                }) {
+                    Text("Async test")
+                }
                 self.total()
                 DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date){
                     EmptyView()
