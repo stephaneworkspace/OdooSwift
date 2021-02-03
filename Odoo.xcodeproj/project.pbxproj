@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ECC074F825CB1F1600C3524F /* Bridgin-header.h in Sources */ = {isa = PBXBuildFile; fileRef = ECC074F725CB1F1600C3524F /* Bridgin-header.h */; };
 		ECC856B225C6BDC40029E8D4 /* OdooApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC856B125C6BDC40029E8D4 /* OdooApp.swift */; };
 		ECC856B425C6BDC40029E8D4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC856B325C6BDC40029E8D4 /* ContentView.swift */; };
 		ECC856B625C6BDC60029E8D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECC856B525C6BDC60029E8D4 /* Assets.xcassets */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		ECC074F725CB1F1600C3524F /* Bridgin-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridgin-header.h"; sourceTree = "<group>"; };
 		ECC856AE25C6BDC40029E8D4 /* Odoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Odoo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECC856B125C6BDC40029E8D4 /* OdooApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdooApp.swift; sourceTree = "<group>"; };
 		ECC856B325C6BDC40029E8D4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 				ECC856E125C6CEE80029E8D4 /* libodoo_tools.h */,
 				ECC856E225C6CEE80029E8D4 /* libodoo_tools.c */,
 				ECC856E025C6CEE80029E8D4 /* Odoo-Bridging-Header.h */,
+				ECC074F725CB1F1600C3524F /* Bridgin-header.h */,
 			);
 			path = RustOdoo;
 			sourceTree = "<group>";
@@ -315,6 +318,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ECC856E325C6CEE80029E8D4 /* libodoo_tools.c in Sources */,
+				ECC074F825CB1F1600C3524F /* Bridgin-header.h in Sources */,
 				ECC856B425C6BDC40029E8D4 /* ContentView.swift in Sources */,
 				ECCFCA8825C709D3007E6F49 /* Work.swift in Sources */,
 				ECC856B225C6BDC40029E8D4 /* OdooApp.swift in Sources */,

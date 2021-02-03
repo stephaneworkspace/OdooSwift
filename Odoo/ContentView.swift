@@ -131,6 +131,7 @@ struct ContentView: View {
     @State var odoo: Odoo = Odoo.init()
     @State var cred: Cred = Cred.init()
     @State var loading = false
+    @State var shouldAnimate = false
     
     func format_program(activity: String, product_name: String ) -> some View {
         let s = String("["+activity+"] " + product_name);
@@ -181,10 +182,35 @@ struct ContentView: View {
                 Button(action: {
                   let semaphore = DispatchSemaphore(value: 0)
                   startOperation(semaphore)
+                    self.shouldAnimate = true
                   semaphore.wait()
+                    self.shouldAnimate = false
                 }) {
                     Text("Async test")
                 }
+                
+                HStack(alignment: .center, spacing: shouldAnimate ? 15 : 5) {
+                    Capsule(style: .continuous)
+                        .fill(Color.blue)
+                        .frame(width: 10, height: 50)
+                    Capsule(style: .continuous)
+                        .fill(Color.blue)
+                        .frame(width: 10, height: 30)
+                    Capsule(style: .continuous)
+                        .fill(Color.blue)
+                        .frame(width: 10, height: 50)
+                    Capsule(style: .continuous)
+                        .fill(Color.blue)
+                        .frame(width: 10, height: 30)
+                    Capsule(style: .continuous)
+                        .fill(Color.blue)
+                        .frame(width: 10, height: 50)
+                }
+                .frame(width: shouldAnimate ? 150 : 100)
+                .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true))
+                //.onAppear {
+                //    self.shouldAnimate = true
+                //}
                 self.total()
                 DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date){
                     EmptyView()

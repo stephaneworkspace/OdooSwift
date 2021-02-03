@@ -1,6 +1,12 @@
 /* Generated with cbindgen:0.15.0 */
 
 #define PRODUCT_PRODUCT_ID_UNKNOWN 18
+/*
+typedef struct {
+  void *userdata;
+  void (*callback)(void*, bool);
+} CompletedCallback;
+*/
 
 /**
  * Simple test pour essayer à nouveau SwiftUI
@@ -20,16 +26,7 @@ char *get_work(const char *url,
 
 void free_string(char *s);
 
-#ifndef BridgingHeader_h
-#define BridgingHeader_h
-
-#import <Foundation/Foundation.h>
-
-typedef struct CompletedCallback {
-    void * _Nonnull userdata;
-    void (* _Nonnull callback)(void * _Nonnull, bool);
-} CompletedCallback;
-
-void async_operation(CompletedCallback callback);
-
-#endif
+/**
+ * Try to implement: https://www.nickwilcox.com/blog/recipe_swift_rust_callback/
+ */
+//void async_operation(CompletedCallback callback);
