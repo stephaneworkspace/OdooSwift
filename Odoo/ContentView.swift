@@ -7,7 +7,8 @@
 
 import SwiftUI
 import Foundation
-
+// NO -> Actix is the solution for async without problem
+// Openapi link: https://paperclip.waffles.space/actix-plugin.html
 private class WrapClosure<T> {
     fileprivate let closure: T
     init(closure: T) {
