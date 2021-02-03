@@ -78,7 +78,7 @@ class Odoo {
 struct ContentView: View {
     @Environment(\.defaultMinListRowHeight) var minRowHeight
     @State var day_work: DayWork = DayWork.init(day: "", work: Array.init())
-    @State private var workDay = Date()
+    @State var workDay = Date()
     @State var odoo: Odoo = Odoo.init()
     @State var cred: Cred = Cred.init()
     @State var loading = false
