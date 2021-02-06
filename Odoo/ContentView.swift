@@ -7,56 +7,6 @@
 
 import SwiftUI
 import Foundation
-// NO -> Actix is the solution for async without problem
-// Openapi link: https://paperclip.waffles.space/actix-plugin.html
-private class WrapClosure<T> {
-    fileprivate let closure: T
-    init(closure: T) {
-        self.closure = closure
-    }
-}
-public func FriendlyAsyncOperation(closure: @escaping (Bool) -> Void) {
-    // step 1
-    let wrappedClosure = WrapClosure(closure: closure)
-    let userdata = Unmanaged.passRetained(wrappedClosure).toOpaque()
-
-    // step 2
-    let callback: @convention(c) (UnsafeMutableRawPointer, Bool) -> Void = { (_ userdata: UnsafeMutableRawPointer, _ success: Bool) in
-        let wrappedClosure: WrapClosure<(Bool) -> Void> = Unmanaged.fromOpaque(userdata).takeRetainedValue()
-        wrappedClosure.closure(success)
-    }
-
-    // step 3
-    let completion = CompletedCallback(userdata: userdata, callback: callback)
-
-    //step 4
-    async_operation(completion)
-}
-
-class TestLifetime {
-    let sema: DispatchSemaphore
-    init(_ sema: DispatchSemaphore) {
-        self.sema = sema
-        print("start of test lifetime")
-    }
-
-    deinit {
-        print("end of test lifetime")
-    }
-
-    func completed(_ success: Bool) {
-        print("the async operation has completed with result \(success)")
-        sema.signal()
-    }
-}
-
-func startOperation(_ sema: DispatchSemaphore) {
-    let test = TestLifetime(sema)
-    print("starting async operation")
-    FriendlyAsyncOperation() { [test] success in
-        test.completed(success)
-    }
-}
 
 class Odoo {
     func HelloWorld() -> String {
@@ -132,8 +82,7 @@ struct ContentView: View {
     @State var odoo: Odoo = Odoo.init()
     @State var cred: Cred = Cred.init()
     @State var loading = false
-    @State var shouldAnimate = false
-    
+
     func format_program(activity: String, product_name: String ) -> some View {
         let s = String("["+activity+"] " + product_name);
         return Text(s)
@@ -190,28 +139,6 @@ struct ContentView: View {
                     Text("Async test")
                 }
                 
-                HStack(alignment: .center, spacing: shouldAnimate ? 15 : 5) {
-                    Capsule(style: .continuous)
-                        .fill(Color.blue)
-                        .frame(width: 10, height: 50)
-                    Capsule(style: .continuous)
-                        .fill(Color.blue)
-                        .frame(width: 10, height: 30)
-                    Capsule(style: .continuous)
-                        .fill(Color.blue)
-                        .frame(width: 10, height: 50)
-                    Capsule(style: .continuous)
-                        .fill(Color.blue)
-                        .frame(width: 10, height: 30)
-                    Capsule(style: .continuous)
-                        .fill(Color.blue)
-                        .frame(width: 10, height: 50)
-                }
-                .frame(width: shouldAnimate ? 150 : 100)
-                .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true))
-                //.onAppear {
-                //    self.shouldAnimate = true
-                //}
                 self.total()
                 DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date){
                     EmptyView()
