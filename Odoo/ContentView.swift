@@ -129,16 +129,6 @@ struct ContentView: View {
                         }//.background(i.isMultiple(of: 2) ?Color(.secondarySystemBackground): Color(.systemBackground))
                     }
                 }.navigationBarTitle(day_work.day ?? "???").frame(minHeight: minRowHeight, maxHeight: minRowHeight * 6).listStyle(GroupedListStyle()).environment(\.horizontalSizeClass, .regular).padding(1).font(.system(size: 10))
-                Button(action: {
-                  let semaphore = DispatchSemaphore(value: 0)
-                  startOperation(semaphore)
-                    self.shouldAnimate = true
-                  semaphore.wait()
-                    self.shouldAnimate = false
-                }) {
-                    Text("Async test")
-                }
-                
                 self.total()
                 DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date){
                     EmptyView()
