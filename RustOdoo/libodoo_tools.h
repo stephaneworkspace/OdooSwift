@@ -22,7 +22,8 @@ char *get_work(const char *url,
                const char *password,
                int year,
                unsigned int month,
-               unsigned int day);
+               unsigned int day,
+	           unsigned int mode);
 
 void free_string(char *s);
 

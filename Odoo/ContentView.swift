@@ -35,7 +35,7 @@ class Odoo {
         let month = UInt32(calendar.component(.month, from: date))
         let day = UInt32(calendar.component(.day, from: date))
         var res = ""
-        if let res_cstr = get_work(url, db, username, password, year, month, day) {
+        if let res_cstr = get_work(url, db, username, password, year, month, day, 0) {
             res = String.init(cString: res_cstr)
             free_string(res_cstr)
         } else {
@@ -51,7 +51,36 @@ class Odoo {
         }
         return json ?? empty_day_work
     }
-    
+    func getWork1(cred: Cred, date: Date) -> DayWork {
+        let empty = ""
+        let empty_day_work = DayWork.init(day: "", work: Array.init())
+        let e_cstring = empty.cString(using: String.Encoding.utf8)
+        let url = cred.url?.cString(using: String.Encoding.utf8) ?? e_cstring
+        let db = cred.db?.cString(using: String.Encoding.utf8) ?? e_cstring
+        let username = cred.username?.cString(using: String.Encoding.utf8) ?? e_cstring
+        let password = cred.password?.cString(using: String.Encoding.utf8) ?? e_cstring
+        let calendar = Calendar.current
+        let year = Int32(calendar.component(.year, from: date))
+        let month = UInt32(calendar.component(.month, from: date))
+        let day = UInt32(calendar.component(.day, from: date))
+        var res = ""
+        if let res_cstr = get_work(url, db, username, password, year, month, day, 1) {
+            res = String.init(cString: res_cstr)
+            free_string(res_cstr)
+        } else {
+            res = "{}"
+        }
+        var json: DayWork?;
+        let decoder = JSONDecoder();
+        let jsonData = res.data(using: String.Encoding.utf8)
+        do {
+            json = try decoder.decode(DayWork.self, from: jsonData!)
+        } catch {
+            debugPrint("Error parsing json odoo work hour")
+        }
+        return json ?? empty_day_work
+    }
+ 
     func readJSONFromFile(fileName: String) -> Cred? {
         var json: Cred?
         if let path = Bundle.main.path(forResource: fileName, ofType: "json") {
@@ -133,11 +162,19 @@ struct ContentView: View {
                 DatePicker(selection: $workDay, in: ...Date(), displayedComponents: .date){
                     EmptyView()
                 }.labelsHidden().datePickerStyle(WheelDatePickerStyle()).clipped().environment(\.locale, Locale.init(identifier: "fr"))
-                Button(action: {
+                HStack {
+                    Button(action: {
                         day_work = odoo.getWork(cred: cred, date: workDay)
                     }) {
-                        Text("This day")
+                        Text("This day detail")
                     }
+                    Spacer()
+                        Button(action: {
+                            day_work = odoo.getWork1(cred: cred, date: workDay)
+                        }) {
+                            Text("This day no detail")
+                        }
+                }
                 }
             }
         }.onAppear(perform: fetch)
@@ -147,7 +184,7 @@ struct ContentView: View {
         odoo = Odoo.init();
         cred = odoo.readJSONFromFile(fileName: "cred")!
         // print(cred?.username ?? "User is nil")
-        day_work = odoo.getWork(cred: cred, date: workDay)
+        day_work = odoo.getWork1(cred: cred, date: workDay)
     }
 }
 
